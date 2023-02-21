@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    labels:
+      - 'dependencies'
+
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    labels:
+      - 'dependencies'
+    allow:
+      - dependency-type: 'direct'
+    commit-message:
+      prefix: 'npm'
+      include: 'scope'

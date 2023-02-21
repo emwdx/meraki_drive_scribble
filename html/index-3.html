@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://unpkg.com">
+    <script src="https://unpkg.com/three@0.136.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/meraki-js-sdk@1/dist/index.js"></script>
+    <script>
+        Meraki(merakiSdk.generateRandomTokenData());
+    </script>
+</head>
+<body>
+    <script src="/js/index.js"></script>
+    <script defer>
+        window.tokenScript = new Script();
+
+        if (typeof window['tokenScript'] === 'undefined') {
+            throw new Error('tokenScript not found: please check that your script is a valid SDK script.');
+        }
+
+
+        window.tokenScript.initialize();
+        window.tokenScript.execute();
+        window.tokenScript.finalize();
+
+        if (typeof window.tokenScript['draw'] === 'function') {
+            window.tokenScript.draw();
+        }
+    </script>
+</body>
+</html>
