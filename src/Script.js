@@ -71,7 +71,7 @@ export class Script extends MerakiScript {
             for (let i = 0; i < this.NUM_CARS; i++) {
                 palette = shuffle(palette)
                 let carStart = [trackCircle[0] + 0.5 * trackCircle[2] + (Meraki.random.number(-0.5 * trackWidth, 0.5 * trackWidth)), trackCircle[1] + (Meraki.random.number(-0.5 * trackWidth, 0.5 * trackWidth))]
-                let car = new Car(carStart[0], carStart[1], Meraki.random.element([-10, -5, 5, 2, 10, -180, -190, -170]), palette[0])
+                let car = new this.Car(carStart[0], carStart[1], Meraki.random.element([-10, -5, 5, 2, 10, -180, -190, -170]), palette[0])
                 circle(carStart[0], carStart[1], 3)
                 this.cars.push(car)
             }
@@ -161,219 +161,221 @@ export class Script extends MerakiScript {
 
             return { color: Meraki.random.element(traits.color()) };
         }
-    }
 
+        Car = class {
 
-
-
-class Car{
-
-    constructor(x,y,angle,palette){
-
-        this.x = x;
-  this.y = y;
-  this.angle = angle;
-  this.steerAngle = angle;
-  this.carHeight = 10;
-  this.carWidth = 20;
-  this.leftEdgeDistance = 0.0;
-  this.rightEdgeDistance = 0.0;
-  this.leftFrontEdgeDistance = 0.0;
-  this.rightFrontEdgeDistance = 0.0;
-  this.frontEdgeDistance = 0.0;
-  this.sensorValues = []
-  this.driftDistance = 0.0;
-  this.maxSteerAngle = 361.0;
-  this.sensorMaxValue = 100;
-  this.sideSensorAngle = 45;
-  this.roadBrightness = 50;
-  this.points = [];
-  this.isDriving = 1;
-  this.palette = palette;
-  
-  this.driveSpeed = Meraki.random.number(100,250.0);
-  this.driveConstant = this.driveSpeed*0.027;
-  
-    }
-  
-  
-  draw(context){
-
-    
-  if(this.y < 10 || this.y > height-10){
-    this.isDriving = 0;
-  }
-  if(this.x < 10 || this.x > width-10){
-    this.isDriving = 0;
-  }
-    
-  push() 
-  noFill()
-  noStroke();
- 
-  
-  translate(this.x, this.y);
-  rotate(this.angle);
-  this.y -= 0.05*this.driveSpeed*cos(this.angle);
-  this.x += 0.05*this.driveSpeed*sin(this.angle);
-  this.points.push([this.x,this.y])
-  pop();
-    
-  push()
-  strokeWeight(1);
-  stroke(255)
-  angleMode(DEGREES)
-  //this.drawCarImage();
-  this.checkEdgeSensors(context);
-  //this.drawEdgeSensors();
-  ///fill(10,10,10);
-  
-  ///rect(canvasSize/2 - 50,canvasSize/2,10,0.5*this.leftEdgeDistance);
-  //rect(canvasSize/2,canvasSize/2,10,0.5*this.frontEdgeDistance);
-  //rect(canvasSize/2+50,canvasSize/2,10,0.5*this.rightEdgeDistance);
-  
-  pop();
-  }
-  
-  steer(){
-    let error = (this.rightEdgeDistance - this.leftEdgeDistance)
-    
-    let signal = error*this.driveConstant
-
-    let driveAngle = this.angle + signal
-    
-    if(driveAngle>this.maxSteerAngle){
-      driveAngle = this.maxSteerAngle;
-    }
-    else if(driveAngle < -this.maxSteerAngle){
-      driveAngle =this.maxSteerAngle;
-    }
-    else{
-    this.angle = driveAngle;
-    if (abs(this.angle)> 360.0){
-      this.angle = 0;
-    }
-    }
-    
-//     this.angle = driveAngle;
-//     if (abs(this.angle)> 360.0){
-//       this.angle = 0;
-//     }
-    
-  }
-  
-  drawCarImage(){
-    noFill()
-    rectMode(CENTER)
-    //stroke(255)
-        strokeWeight(0.5);
-        push()
-        translate(this.x,this.y)
-        rotate(this.angle)
-    //rect(0,0,this.carHeight,this.carWidth);
-    //fill(color(0,180,0));
-    //rect(x,y-0.55*this.carHeight,0.5*this.carWidth,0.55*this.carHeight);
-    rectMode(CORNER)
-    pop()
-  }
-  
-  checkEdgeSensors(context){
-  
-    for(var i = 0;i<this.sensorMaxValue;i+= 2){
-      
-      let edgeSensorValue = context.get(round(this.x+i*cos(this.angle)),round(this.y+i*sin(this.angle)));
-
-      if(edgeSensorValue[1]>this.roadBrightness){
-        this.rightEdgeDistance = i;
-        break;
-      }
-      else{
-        this.rightEdgeDistance = this.sensorMaxValue;
-      }
-    }
-    for(var i = 0;i>-this.sensorMaxValue;i-= 2){
-      let edgeSensorValue = context.get(round(this.x+i*cos(this.angle)),round(this.y+i*sin(this.angle)));
-      
-      if(edgeSensorValue[1]>this.roadBrightness){
-        this.leftEdgeDistance = -i;
-        break;
-      }
-      else{
-        this.leftEdgeDistance = this.sensorMaxValue;
-      }
-    }
-    for(var i = 0;i< this.sensorMaxValue;i+= 2){
+            constructor(x,y,angle,palette){
         
-       let edgeSensorValue = context.get(round(this.x+i*sin(this.angle)),round(this.y-i*cos(this.angle)));
-      if(edgeSensorValue[1]>this.roadBrightness ){
-        this.frontEdgeDistance = i;
-        break;
-      }
-      else{
-        this.frontEdgeDistance = this.sensorMaxValue;
-      }
+                this.x = x;
+          this.y = y;
+          this.angle = angle;
+          this.steerAngle = angle;
+          this.carHeight = 10;
+          this.carWidth = 20;
+          this.leftEdgeDistance = 0.0;
+          this.rightEdgeDistance = 0.0;
+          this.leftFrontEdgeDistance = 0.0;
+          this.rightFrontEdgeDistance = 0.0;
+          this.frontEdgeDistance = 0.0;
+          this.sensorValues = []
+          this.driftDistance = 0.0;
+          this.maxSteerAngle = 361.0;
+          this.sensorMaxValue = 100;
+          this.sideSensorAngle = 45;
+          this.roadBrightness = 50;
+          this.points = [];
+          this.isDriving = 1;
+          this.palette = palette;
+          
+          this.driveSpeed = Meraki.random.number(100,250.0);
+          this.driveConstant = this.driveSpeed*0.027;
+          
+            }
+          
+          
+          draw(context){
+        
+            
+          if(this.y < 10 || this.y > height-10){
+            this.isDriving = 0;
+          }
+          if(this.x < 10 || this.x > width-10){
+            this.isDriving = 0;
+          }
+            
+          push() 
+          noFill()
+          noStroke();
+         
+          
+          translate(this.x, this.y);
+          rotate(this.angle);
+          this.y -= 0.05*this.driveSpeed*cos(this.angle);
+          this.x += 0.05*this.driveSpeed*sin(this.angle);
+          this.points.push([this.x,this.y])
+          pop();
+            
+          push()
+          strokeWeight(1);
+          stroke(255)
+          angleMode(DEGREES)
+          //this.drawCarImage();
+          this.checkEdgeSensors(context);
+          //this.drawEdgeSensors();
+          ///fill(10,10,10);
+          
+          ///rect(canvasSize/2 - 50,canvasSize/2,10,0.5*this.leftEdgeDistance);
+          //rect(canvasSize/2,canvasSize/2,10,0.5*this.frontEdgeDistance);
+          //rect(canvasSize/2+50,canvasSize/2,10,0.5*this.rightEdgeDistance);
+          
+          pop();
+          }
+          
+          steer(){
+            let error = (this.rightEdgeDistance - this.leftEdgeDistance)
+            
+            let signal = error*this.driveConstant
+        
+            let driveAngle = this.angle + signal
+            
+            if(driveAngle>this.maxSteerAngle){
+              driveAngle = this.maxSteerAngle;
+            }
+            else if(driveAngle < -this.maxSteerAngle){
+              driveAngle =this.maxSteerAngle;
+            }
+            else{
+            this.angle = driveAngle;
+            if (abs(this.angle)> 360.0){
+              this.angle = 0;
+            }
+            }
+            
+        //     this.angle = driveAngle;
+        //     if (abs(this.angle)> 360.0){
+        //       this.angle = 0;
+        //     }
+            
+          }
+          
+          drawCarImage(){
+            noFill()
+            rectMode(CENTER)
+            //stroke(255)
+                strokeWeight(0.5);
+                push()
+                translate(this.x,this.y)
+                rotate(this.angle)
+            //rect(0,0,this.carHeight,this.carWidth);
+            //fill(color(0,180,0));
+            //rect(x,y-0.55*this.carHeight,0.5*this.carWidth,0.55*this.carHeight);
+            rectMode(CORNER)
+            pop()
+          }
+          
+          checkEdgeSensors(context){
+          
+            for(var i = 0;i<this.sensorMaxValue;i+= 2){
+              
+              let edgeSensorValue = context.get(round(this.x+i*cos(this.angle)),round(this.y+i*sin(this.angle)));
+        
+              if(edgeSensorValue[1]>this.roadBrightness){
+                this.rightEdgeDistance = i;
+                break;
+              }
+              else{
+                this.rightEdgeDistance = this.sensorMaxValue;
+              }
+            }
+            for(var i = 0;i>-this.sensorMaxValue;i-= 2){
+              let edgeSensorValue = context.get(round(this.x+i*cos(this.angle)),round(this.y+i*sin(this.angle)));
+              
+              if(edgeSensorValue[1]>this.roadBrightness){
+                this.leftEdgeDistance = -i;
+                break;
+              }
+              else{
+                this.leftEdgeDistance = this.sensorMaxValue;
+              }
+            }
+            for(var i = 0;i< this.sensorMaxValue;i+= 2){
+                
+               let edgeSensorValue = context.get(round(this.x+i*sin(this.angle)),round(this.y-i*cos(this.angle)));
+              if(edgeSensorValue[1]>this.roadBrightness ){
+                this.frontEdgeDistance = i;
+                break;
+              }
+              else{
+                this.frontEdgeDistance = this.sensorMaxValue;
+              }
+            }
+            for(var i = 0;i<this.sensorMaxValue;i+= 2){
+               let edgeSensorValue = context.get(round(this.x-i*sin(-this.angle+this.sideSensorAngle)),round(this.y-i*cos(-this.angle+this.sideSensorAngle)));
+              if(edgeSensorValue[1]>this.roadBrightness){
+                this.leftFrontEdgeDistance = i;
+                break;
+              }
+              else{
+                this.leftFrontEdgeDistance = this.sensorMaxValue;
+              }
+            }
+          
+             for(var i = 0;i< this.sensorMaxValue;i+= 2){
+               let edgeSensorValue = context.get(round(this.x+i*sin(this.angle+this.sideSensorAngle)),round(this.y-i*cos(this.angle+this.sideSensorAngle)));
+              if(edgeSensorValue[1]>this.roadBrightness){
+                this.rightFrontEdgeDistance = i;
+                break;
+              }
+              else{
+                this.rightFrontEdgeDistance = this.sensorMaxValue;
+              }
+            }
+            //console.log(this.sensorValues)
+            this.sensorValues = [this.leftEdgeDistance,this.leftFrontEdgeDistance,this.frontEdgeDistance,this.rightFrontEdgeDistance,this.rightEdgeDistance]
+          }
+          
+        drawEdgeSensors (){
+            
+          push() 
+          stroke(color(200,0,0));
+          strokeWeight(3);
+          
+          translate(this.x, this.y);
+          rotate(this.angle);
+          let x = 0-this.leftEdgeDistance;
+        
+          line(0, 0, x, 0)
+          x = 0+this.rightEdgeDistance;
+        
+          line(0, 0, x, 0)
+        
+          y = 0-this.frontEdgeDistance;
+          line(0, 0, 0, y)
+        
+          x = 0 - this.leftFrontEdgeDistance*sin(sideSensorAngle);  
+          y = 0 - this.leftFrontEdgeDistance*cos(sideSensorAngle);
+        
+          line(0, 0, x, y)
+        
+          x = 0 + this.rightFrontEdgeDistance*sin(sideSensorAngle);  
+          y = 0 - this.rightFrontEdgeDistance*cos(sideSensorAngle);
+          line(0, 0, x, y)
+          
+          pop();
+               
+          }
+          
+          resetPosition(){
+            this.y = 0.5*canvasSize;
+            this.x = 0.5*canvasSize+0.5*trackRadius;
+            this.angle = 0;
+            
+          }
+          
+        }
     }
-    for(var i = 0;i<this.sensorMaxValue;i+= 2){
-       let edgeSensorValue = context.get(round(this.x-i*sin(-this.angle+this.sideSensorAngle)),round(this.y-i*cos(-this.angle+this.sideSensorAngle)));
-      if(edgeSensorValue[1]>this.roadBrightness){
-        this.leftFrontEdgeDistance = i;
-        break;
-      }
-      else{
-        this.leftFrontEdgeDistance = this.sensorMaxValue;
-      }
-    }
-  
-     for(var i = 0;i< this.sensorMaxValue;i+= 2){
-       let edgeSensorValue = context.get(round(this.x+i*sin(this.angle+this.sideSensorAngle)),round(this.y-i*cos(this.angle+this.sideSensorAngle)));
-      if(edgeSensorValue[1]>this.roadBrightness){
-        this.rightFrontEdgeDistance = i;
-        break;
-      }
-      else{
-        this.rightFrontEdgeDistance = this.sensorMaxValue;
-      }
-    }
-    //console.log(this.sensorValues)
-    this.sensorValues = [this.leftEdgeDistance,this.leftFrontEdgeDistance,this.frontEdgeDistance,this.rightFrontEdgeDistance,this.rightEdgeDistance]
-  }
-  
-drawEdgeSensors (){
-    
-  push() 
-  stroke(color(200,0,0));
-  strokeWeight(3);
-  
-  translate(this.x, this.y);
-  rotate(this.angle);
-  let x = 0-this.leftEdgeDistance;
 
-  line(0, 0, x, 0)
-  x = 0+this.rightEdgeDistance;
 
-  line(0, 0, x, 0)
 
-  y = 0-this.frontEdgeDistance;
-  line(0, 0, 0, y)
 
-  x = 0 - this.leftFrontEdgeDistance*sin(sideSensorAngle);  
-  y = 0 - this.leftFrontEdgeDistance*cos(sideSensorAngle);
 
-  line(0, 0, x, y)
-
-  x = 0 + this.rightFrontEdgeDistance*sin(sideSensorAngle);  
-  y = 0 - this.rightFrontEdgeDistance*cos(sideSensorAngle);
-  line(0, 0, x, y)
-  
-  pop();
-       
-  }
-  
-  resetPosition(){
-    this.y = 0.5*canvasSize;
-    this.x = 0.5*canvasSize+0.5*trackRadius;
-    this.angle = 0;
-    
-  }
-  
-}
