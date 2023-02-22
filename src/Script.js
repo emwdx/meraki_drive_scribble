@@ -1,6 +1,6 @@
 export class Script extends MerakiScript {
 
-    CANVAS_SIZE = 2000;
+    CANVAS_SIZE = Meraki.canvas.height;
     PROJECT_NAME = "PROJECT_NAME"
     SELECTED_PALETTE;
     TRACK_WIDTH = 50;
@@ -26,7 +26,7 @@ export class Script extends MerakiScript {
 
 
 
-    SELECTED_PALETTE = this.PALETTE_COLLECTION[0];
+    SELECTED_PALETTE = Meraki.random.element(this.PALETTE_COLLECTION);
 
 
     cars = []
@@ -42,8 +42,8 @@ export class Script extends MerakiScript {
         palette = shuffle(palette)
         background(palette[0])
         palette.shift()
-        let randomSeedValue = int(random() * 100000000); // generate a random seed for fx_hash
-        randomSeed(randomSeedValue)
+        
+        randomSeed(Meraki.data.tokenHash)
         this.trackCanvas = createGraphics(this.CANVAS_SIZE, this.CANVAS_SIZE);
         this.trackCanvas.background(255);
 
@@ -54,9 +54,9 @@ export class Script extends MerakiScript {
         this.trackCanvas.fill(255);
 
         for (let i = 0; i < this.NUM_CIRCLES; i++) {
-            let trackCircle = [random(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), random(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), random(this.CANVAS_SIZE / 5, this.CANVAS_SIZE / 2)]
-            let trackWidth = random(60, 260);
-            if (random() > 0.5) {
+            let trackCircle = [Meraki.random.number(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), Meraki.random.number(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), Meraki.random.number(this.CANVAS_SIZE / 5, this.CANVAS_SIZE / 2)]
+            let trackWidth = Meraki.random.number(60, 260);
+            if (Meraki.random.decimal() > 0.5) {
                 this.trackCanvas.circle(trackCircle[0], trackCircle[1], trackCircle[2])
             }
             else {
@@ -65,13 +65,13 @@ export class Script extends MerakiScript {
 
 
 
-            let carStart = [trackCircle[0] + trackCircle[2] + (random(0, trackWidth)), trackCircle[1]/*+(random(-trackWidth,trackWidth))*/]
+            let carStart = [trackCircle[0] + trackCircle[2] + (Meraki.random.number(0, trackWidth)), trackCircle[1]+(Meraki.random.number(-trackWidth,trackWidth))]
             noStroke()
 
             for (let i = 0; i < this.NUM_CARS; i++) {
                 palette = shuffle(palette)
-                let carStart = [trackCircle[0] + 0.5 * trackCircle[2] + (random(-0.5 * trackWidth, 0.5 * trackWidth)), trackCircle[1] + (random(-0.5 * trackWidth, 0.5 * trackWidth))]
-                let car = new Car(carStart[0], carStart[1], random([-10, -5, 5, 2, 10, -180, -190, -170]), palette[0])
+                let carStart = [trackCircle[0] + 0.5 * trackCircle[2] + (Meraki.random.number(-0.5 * trackWidth, 0.5 * trackWidth)), trackCircle[1] + (Meraki.random.number(-0.5 * trackWidth, 0.5 * trackWidth))]
+                let car = new Car(carStart[0], carStart[1], Meraki.random.element([-10, -5, 5, 2, 10, -180, -190, -170]), palette[0])
                 circle(carStart[0], carStart[1], 3)
                 this.cars.push(car)
             }
@@ -92,7 +92,7 @@ export class Script extends MerakiScript {
                         this.cars[i].draw(this.trackCanvas)
                         this.cars[i].steer()
 
-                        circle(this.cars[i].x, this.cars[i].y, random(1, 3))
+                        circle(this.cars[i].x, this.cars[i].y, Meraki.random.number(1, 3))
 
 
                         //line(cars[i].x,cars[i].y,cars[cars[i].points.length - 1].x,cars[cars[i].points.length - 1].y)
@@ -145,8 +145,9 @@ export class Script extends MerakiScript {
 
         configure() {
             return {
-                sdkVersion: '1.x',
-                renderTimeMs: 500,
+                animation: true,
+                sdkVersion: '1.3',
+                renderTimeMs: 60000,
                 library: {
                     name: 'p5',
                     version: '1.4.0',
@@ -162,22 +163,6 @@ export class Script extends MerakiScript {
         }
     }
 
-
-    //const canvasSize = 600.0;
-//const trackRadius = 0.7*canvasSize;
-//const trackWidth = 50.0;
-//const driveConstant = 4;
-//const driveSpeed = 150.0;
-//const sensorMaxValue = 100;
-//const sideSensorAngle = 45;
-//let x = 0.5*canvasSize+0.5*trackRadius;
-//let y = 0.5*canvasSize;
-//let angle = 0;
-
-//var state = 'waiting'
-//let controllers = [];
-//let pathPoints = [[0.5*canvasSize+0.5*trackRadius,0.5*canvasSize],[0.5*canvasSize+0.5*trackRadius,0.5*canvasSize-100]];
-//let pathPointsString = "[[0.5*canvasSize+0.5*trackRadius,0.5*canvasSize],[0.5*canvasSize+0.5*trackRadius,0.5*canvasSize-100]]";
 
 
 
@@ -206,7 +191,7 @@ class Car{
   this.isDriving = 1;
   this.palette = palette;
   
-  this.driveSpeed = random(100,250.0);
+  this.driveSpeed = Meraki.random.number(100,250.0);
   this.driveConstant = this.driveSpeed*0.027;
   
     }
