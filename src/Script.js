@@ -38,12 +38,17 @@ export class Script extends MerakiScript {
     execute() {
 
         createCanvas(this.CANVAS_SIZE, this.CANVAS_SIZE);
+        randomSeed(Meraki.data.tokenHash)
         let palette = this.SELECTED_PALETTE.palette.slice(0, this.SELECTED_PALETTE.palette.length - 1)
         palette = shuffle(palette)
+        frameRate(60);
+  while(!this.colorIsBackground(palette[0],this.SELECTED_PALETTE.not_background)){
+    palette = shuffle(palette)
+  }
         background(palette[0])
         palette.shift()
-        
-        randomSeed(Meraki.data.tokenHash)
+        palette = shuffle(palette)
+      
         this.trackCanvas = createGraphics(this.CANVAS_SIZE, this.CANVAS_SIZE);
         this.trackCanvas.background(255);
 
@@ -147,7 +152,7 @@ export class Script extends MerakiScript {
             return {
                 animation: true,
                 sdkVersion: '1.3',
-                renderTimeMs: 60000,
+                renderTimeMs: 6000,
                 library: {
                     name: 'p5',
                     version: '1.4.0',
@@ -161,6 +166,16 @@ export class Script extends MerakiScript {
 
             return { color: Meraki.random.element(traits.color()) };
         }
+
+        colorIsBackground(color,noBackground){
+            for(let i = 0;i<noBackground.length;i++){
+          
+              if(color.toString()==noBackground[i].toString()){
+                return false;
+              }
+            }
+            return true;
+          }
 
         Car = class {
 
