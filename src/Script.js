@@ -55,7 +55,7 @@ export class Script extends MerakiScript {
 
         for (let i = 0; i < this.NUM_CIRCLES; i++) {
             let trackCircle = [random(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), random(0.2 * this.CANVAS_SIZE, 0.6 * this.CANVAS_SIZE), random(this.CANVAS_SIZE / 5, this.CANVAS_SIZE / 2)]
-            let trackWidth = random(40, 60);
+            let trackWidth = random(60, 260);
             if (random() > 0.5) {
                 this.trackCanvas.circle(trackCircle[0], trackCircle[1], trackCircle[2])
             }
@@ -146,7 +146,7 @@ export class Script extends MerakiScript {
         configure() {
             return {
                 sdkVersion: '1.x',
-                renderTimeMs: 50,
+                renderTimeMs: 500,
                 library: {
                     name: 'p5',
                     version: '1.4.0',
